@@ -36,33 +36,38 @@
 .toc-level-1 {
     font-size: 0.9rem;
     margin-top: 0.5rem;
-    font-weight: bold;
+    font-weight: bolder;
 }
 
 .toc-level-2 {
     font-size: 0.8rem;
     margin-top: 0.3rem;
     margin-left: 0.8rem;
+    font-weight: 500;
 }
 
 .toc-level-3 {
     font-size: 0.75rem;
     margin-top: 0.3rem;
     margin-left: 1.5rem;
+    font-weight: 500;
 }
 
 .toc-level-4 {
     font-size: 0.75rem;
     margin-top: 0.3rem;
     margin-left: 2.2rem;
+    font-weight: 500;
 }
 
 .toc-active, .toc-common:hover {
     color: #20404a;
+    text-shadow: 2px 1.5px 3px  silver;
 }
 
 .toc-parent-active {
     color: #206ba4;
+    text-shadow: 2px 1.5px 3px  silver;
 }
 
 @media (max-width: 95rem) {
