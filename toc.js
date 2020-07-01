@@ -98,6 +98,7 @@ const TOC_CARD = (function () {
     const mainContents = document.querySelector(CLASS_OF_MAIN_CONTENTS);
 
     const hTags = (function () {
+      if(mainContents === null) return;
       const foundHTags = mainContents.querySelectorAll('h1, h2, h3, h4');
 
       /* 글 내용 밑에 있는 [...카테고리의 다른 글] h4 제거 */
@@ -106,7 +107,7 @@ const TOC_CARD = (function () {
 
     /* h1, h2, h3, h4 태그가 있는지 확인한다 */
     const checkExistenceOfHTags = function () {
-      if (mainContents === undefined) {
+      if (mainContents === undefined || hTags === undefined) {
         return false;
       }
 
