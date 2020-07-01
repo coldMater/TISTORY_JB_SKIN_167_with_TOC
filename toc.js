@@ -1,11 +1,11 @@
 /*
  * Tistory TOC (Table Of Contents)
  * dev by wbluke (wbluke.com)
- * last update 2020.05.06
- * version 0.1.5
+ * last update 2020.04.15
+ * version 0.1.4
  */
 
-const CLASS_OF_MAIN_CONTENTS = '.area_view';
+const CLASS_OF_MAIN_CONTENTS = '.tt_article_useless_p_margin';
 
 const CONSTANTS = (function () {
   const KEY_OF_H1 = 1;
@@ -77,12 +77,13 @@ const TOC_CARD = (function () {
 
     const onscroll = function () {
       const tocTag = tocCardService.findCurrentHTag();
-
-      if (tocTag) {
-        tocCardService.markCurrentHTag(tocTag);
-        tocCardService.scrollToMainTocTag(tocTag);
-        tocCardService.detectTocCardPosition();
+      if (tocTag == undefined) {
+        return;
       }
+
+      tocCardService.markCurrentHTag(tocTag);
+      tocCardService.scrollToMainTocTag(tocTag);
+      tocCardService.detectTocCardPosition();
     }
 
     return {
@@ -171,7 +172,7 @@ const TOC_CARD = (function () {
     const createBasicItemBy = function (hTag, indexOfHTag) {
       const basicItem = document.createElement('a');
 
-      basicItem.innerHTML += hTag.innerText;
+      basicItem.innerHTML = hTag.innerHTML;
       basicItem.id = `toc-${indexOfHTag}`;
       basicItem.classList = 'toc-common';
 
@@ -206,13 +207,8 @@ const TOC_CARD = (function () {
     }
 
     const findCurrentMainHTag = function () {
-      const headArea = document.querySelector('.area_head');
-
-      let headAreaHeight = 0;
-      if (headArea) {
-        headAreaHeight = headArea.offsetHeight;
-      }
-
+      const headArea = document.querySelector('.jb-background-header');
+      const headAreaHeight = headArea !== undefined ? headArea.offsetHeight : 0;
       const middleHeight = window.scrollY + (window.innerHeight / 2) - headAreaHeight;
 
       return [...hTags].reduce((pre, cur) => {
@@ -310,13 +306,8 @@ const TOC_CARD = (function () {
     const detectTocCardPosition = function () {
       const currentScrollTop = document.documentElement.scrollTop;
 
-      const footer = document.querySelector('#mEtc');
-
-      let footerTop = Number.MAX_SAFE_INTEGER;
-      if (footer) {
-        footerTop = footer.offsetTop;
-      }
-
+      const footer = document.querySelector('.jb-background-footer');
+      const footerTop = footer !== undefined ? footer.offsetTop : Number.MAX_SAFE_INTEGER;
       const elementsCardBottom = currentScrollTop + tocElementsCard.offsetHeight;
 
       tocElementsCard.classList.remove('toc-app-basic', 'toc-app-bottom');

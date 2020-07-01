@@ -16,8 +16,9 @@
 /* custom item style */
 
 .items {
-    height: 70vh;
+    height: 75vh;
     width: 15.3rem;
+    top: 110px;
     overflow-y: scroll;
     -ms-overflow-style: none;
 }
@@ -64,7 +65,7 @@
     color: #A1C7A0;
 }
 
-@media (max-width: 83.75rem) {
+@media (max-width: 95rem) {
     .toc-app-common {
         visibility: hidden;
     }
