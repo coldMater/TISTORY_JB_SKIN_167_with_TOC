@@ -82,13 +82,21 @@ const TOC_CARD = (function () {
       }
 
       tocCardService.markCurrentHTag(tocTag);
-      tocCardService.scrollToMainTocTag(tocTag);
       tocCardService.detectTocCardPosition();
+    }
+
+    const onscrollend = function() {
+      const tocTag = tocCardService.findCurrentHTag();
+      if (tocTag == undefined) {
+        return;
+      }
+      tocCardService.scrollToMainTocTag(tocTag);
     }
 
     return {
       init,
       onscroll,
+      onscrollend,
     };
   };
 
@@ -343,9 +351,14 @@ const TOC_CARD = (function () {
     tocCardController.onscroll();
   }
 
+  const onscrollend = function () {
+    tocCardController.onscrollend();
+  }
+
   return {
     init,
     onscroll,
+    onscrollend,
   }
 })();
 
@@ -354,6 +367,14 @@ TOC_CARD.init();
 /**
  * scroll 시 현재 내용의 위치를 스크롤 이벤트를 통해 TOC에 표시해주기
  */
+var isScrolling;
+
 window.onscroll = function () {
   TOC_CARD.onscroll();
+
+  window.clearTimeout( isScrolling );
+
+  isScrolling = setTimeout(function() {
+    TOC_CARD.onscrollend();
+  }, 66);
 }
