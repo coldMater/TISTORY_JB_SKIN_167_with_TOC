@@ -34,9 +34,12 @@
 }
 
 .toc-level-1 {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-top: 0.5rem;
     font-weight: bolder;
+    color: #333;
+    border-left: 5px solid #26a1dc;
+    padding-left: 5px;
 }
 
 .toc-level-2 {
