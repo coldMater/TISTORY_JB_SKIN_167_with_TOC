@@ -62,10 +62,14 @@
 .toc-active, .toc-parent-active {
     color: #20404a;
     text-shadow: 2px 1.5px 3px  silver;
+    transform: scale(1.05);
+    transition: all 0.125s ease-in 0s;
 } 
 
 .toc-common:hover {
     color: #206ba4;
+    transform: scale(1.05);
+    transition: all 0.125s ease-in 0s;
 }
 
 @media (max-width: 105rem) {
