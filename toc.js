@@ -1,8 +1,10 @@
-/*
+/* Original:
  * Tistory TOC (Table Of Contents)
- * dev by wbluke (wbluke.com)
- * last update 2020.04.15
- * version 0.1.4
+ * dev by wbluke (https://wbluke.tistory.com)
+ * last update 2022.09.28
+ * version 0.1.9
+ * 
+ * custom version by coldmater to adjust TOC to custom skin(jb factory 167)
  */
 
 const CLASS_OF_MAIN_CONTENTS = '.tt_article_useless_p_margin';
@@ -12,59 +14,99 @@ const CONSTANTS = (function () {
   const KEY_OF_H2 = 2;
   const KEY_OF_H3 = 3;
   const KEY_OF_H4 = 4;
+  const KEY_OF_H5 = 5;
+  const KEY_OF_H6 = 6;
 
   const LEVEL_1 = 1;
   const LEVEL_2 = 2;
   const LEVEL_3 = 3;
   const LEVEL_4 = 4;
+  const LEVEL_5 = 5;
+  const LEVEL_6 = 6;
 
   /* 최상위 태그에 따른 레벨 Map */
   const levelsByH1 = function () {
-    return new Map([[KEY_OF_H1, LEVEL_1], [KEY_OF_H2, LEVEL_2], [KEY_OF_H3, LEVEL_3], [KEY_OF_H4, LEVEL_4]])
-  }
+    return new Map([
+      [KEY_OF_H1, LEVEL_1],
+      [KEY_OF_H2, LEVEL_2],
+      [KEY_OF_H3, LEVEL_3],
+      [KEY_OF_H4, LEVEL_4],
+      [KEY_OF_H5, LEVEL_5],
+      [KEY_OF_H6, LEVEL_6],
+    ]);
+  };
 
   const levelsByH2 = function () {
-    return new Map([[KEY_OF_H2, LEVEL_1], [KEY_OF_H3, LEVEL_2], [KEY_OF_H4, LEVEL_3]])
-  }
+    return new Map([
+      [KEY_OF_H2, LEVEL_1],
+      [KEY_OF_H3, LEVEL_2],
+      [KEY_OF_H4, LEVEL_3],
+      [KEY_OF_H5, LEVEL_4],
+      [KEY_OF_H6, LEVEL_5],
+    ]);
+  };
 
   const levelsByH3 = function () {
-    return new Map([[KEY_OF_H3, LEVEL_1], [KEY_OF_H4, LEVEL_2]])
-  }
+    return new Map([
+      [KEY_OF_H3, LEVEL_1],
+      [KEY_OF_H4, LEVEL_2],
+      [KEY_OF_H5, LEVEL_3],
+      [KEY_OF_H6, LEVEL_4],
+    ]);
+  };
 
   const levelsByH4 = function () {
-    return new Map([[KEY_OF_H4, LEVEL_1]])
-  }
+    return new Map([
+      [KEY_OF_H4, LEVEL_1],
+      [KEY_OF_H5, LEVEL_2],
+      [KEY_OF_H6, LEVEL_3],
+    ]);
+  };
+
+  const levelsByH5 = function () {
+    return new Map([
+      [KEY_OF_H5, LEVEL_1],
+      [KEY_OF_H6, LEVEL_2],
+    ]);
+  };
+
+  const levelsByH6 = function () {
+    return new Map([[KEY_OF_H6, LEVEL_1]]);
+  };
 
   return {
     indexOfH1: KEY_OF_H1,
     indexOfH2: KEY_OF_H2,
     indexOfH3: KEY_OF_H3,
     indexOfH4: KEY_OF_H4,
+    indexOfH5: KEY_OF_H5,
+    indexOfH6: KEY_OF_H6,
     levelsByH1: levelsByH1(),
     levelsByH2: levelsByH2(),
     levelsByH3: levelsByH3(),
     levelsByH4: levelsByH4(),
-  }
+    levelsByH5: levelsByH5(),
+    levelsByH6: levelsByH6(),
+  };
 })();
 
 const TOC_CARD = (function () {
   const TocCardController = function () {
-
     const tocCardService = new TocCardService();
 
     const initTocElementsCard = function () {
       tocCardService.initTocElementsCard();
-    }
+    };
 
     const giveIdToHTags = function () {
       tocCardService.giveIdToHTags();
-    }
+    };
 
     const registerHTagsOnTocCard = function () {
       const levelMap = tocCardService.getLevelsByHighestTag();
 
       tocCardService.registerTagsOnToc(levelMap);
-    }
+    };
 
     const init = function () {
       const existsHTags = tocCardService.checkExistenceOfHTags();
@@ -77,13 +119,13 @@ const TOC_CARD = (function () {
 
     const onscroll = function () {
       const tocTag = tocCardService.findCurrentHTag();
-      if (tocTag == undefined) {
-        return;
-      }
 
-      tocCardService.markCurrentHTag(tocTag);
-      tocCardService.detectTocCardPosition();
-    }
+      if (tocTag) {
+        tocCardService.markCurrentHTag(tocTag);
+        tocCardService.scrollToMainTocTag(tocTag);
+        tocCardService.detectTocCardPosition();
+      }
+    };
 
     const onscrollend = function() {
       const tocTag = tocCardService.findCurrentHTag();
@@ -106,28 +148,28 @@ const TOC_CARD = (function () {
     const mainContents = document.querySelector(CLASS_OF_MAIN_CONTENTS);
 
     const hTags = (function () {
-      const foundHTags = mainContents.querySelectorAll('h1, h2, h3, h4');
+      const foundHTags = mainContents
+        ? mainContents.querySelectorAll('h1, h2, h3, h4, h5, h6')
+        : [];
 
       /* 글 내용 밑에 있는 [...카테고리의 다른 글] h4 제거 */
-      return [...foundHTags].filter(hTag => !hTag.parentElement.classList.contains('another_category'));
+      return [...foundHTags].filter(
+        hTag => !hTag.parentElement.classList.contains('another_category')
+      );
     })();
 
-    /* h1, h2, h3, h4 태그가 있는지 확인한다 */
+    /* h1, h2, h3, h4, h5, h6 태그가 있는지 확인한다 */
     const checkExistenceOfHTags = function () {
-      if (mainContents === undefined) {
-        return false;
-      }
-
       return hTags.length !== 0;
-    }
+    };
 
     const initTocElementsCard = function () {
       tocElementsCard.classList.add('toc-app-common', 'items', 'toc-app-basic');
-    }
+    };
 
     /** 최상위 태그에 따른 레벨 Map 받아오기
      * 
-     * h1 ~ h4 태그 중 가장 높은 태그를 찾아서 그에 맞게 Level을 설정한다.
+     * h1 ~ h6 태그 중 가장 높은 태그를 찾아서 그에 맞게 Level을 설정한다.
      * 예를 들어, h1 태그가 없고 h2, h3 태그만 있는 경우
      * h2가 가장 높은 태그이며, 해당 태그 h2에 LEVEL_1을 부여하고 그 다음 태그인 h3에는 LEVEL_2를 부여한다.
      * 
@@ -135,13 +177,17 @@ const TOC_CARD = (function () {
      * */
     const getLevelsByHighestTag = function () {
       const levelMapByHighestTag = {
-        'H1': CONSTANTS.levelsByH1,
-        'H2': CONSTANTS.levelsByH2,
-        'H3': CONSTANTS.levelsByH3,
+        H1: CONSTANTS.levelsByH1,
+        H2: CONSTANTS.levelsByH2,
+        H3: CONSTANTS.levelsByH3,
+        H4: CONSTANTS.levelsByH4,
+        H5: CONSTANTS.levelsByH5,
       };
 
-      return levelMapByHighestTag[findHighestHTag().tagName] || CONSTANTS.levelsByH4;
-    }
+      return (
+        levelMapByHighestTag[findHighestHTag().tagName] || CONSTANTS.levelsByH6
+      );
+    };
 
     /* 최상위 태그 판별 작업 */
     const findHighestHTag = function () {
@@ -149,9 +195,9 @@ const TOC_CARD = (function () {
         const tagNumOfPre = parseInt(pre.tagName[1]);
         const tagNumOfCur = parseInt(cur.tagName[1]);
 
-        return (tagNumOfPre < tagNumOfCur) ? pre : cur;
+        return tagNumOfPre < tagNumOfCur ? pre : cur;
       });
-    }
+    };
 
     /* TOC에 태그 삽입 */
     const registerTagsOnToc = function (levelMap) {
@@ -162,48 +208,69 @@ const TOC_CARD = (function () {
           if (hTag.matches(`h${key}`)) {
             hTagItem = createTagItemByLevel(level, hTag, indexOfHTag);
           }
-        })
+        });
 
         tocElementsCard.appendChild(hTagItem);
       });
-    }
+    };
 
-    const createTagItemByLevel = function (level = CONSTANTS.NUM_OF_H1, hTag, indexOfHTag) {
+    const createTagItemByLevel = function (
+      level = CONSTANTS.NUM_OF_H1,
+      hTag,
+      indexOfHTag
+    ) {
       const basicItem = createBasicItemBy(hTag, indexOfHTag);
+
       appendScrollEventsOn(basicItem, indexOfHTag);
 
       basicItem.classList.add(`toc-level-${level}`);
 
       return basicItem;
-    }
+    };
 
     const createBasicItemBy = function (hTag, indexOfHTag) {
       const basicItem = document.createElement('a');
+      let hTagInnerHTML = hTag.innerHTML;
 
-      basicItem.innerHTML = hTag.innerHTML;
+      // /* H tag 내용에 부등호 괄호가 포함되어 있을 때, 이를 html 특수문자 코드로 변경 */
+      // if (hTag.innerHTML.includes('<')) {
+      //   hTagInnerHTML = hTagInnerHTML.replace(/&lt;/g, '&amp;lt;');
+      //   hTagInnerHTML = hTagInnerHTML.replace(/</g, '&lt;');
+      // }
+
+      // if (hTag.innerHTML.includes('>')) {
+      //   hTagInnerHTML = hTagInnerHTML.replace(/&gt;/g, '&amp;gt;');
+      //   hTagInnerHTML = hTagInnerHTML.replace(/>/g, '&gt;');
+      // }
+
+      basicItem.innerHTML += hTagInnerHTML;
       basicItem.id = `toc-${indexOfHTag}`;
       basicItem.classList = 'toc-common';
 
       return basicItem;
-    }
+    };
 
     const generateIdOfHTag = function (indexOfHTag) {
       return 'h-tag-' + indexOfHTag;
-    }
+    };
 
     const appendScrollEventsOn = function (basicItem, indexOfHTag) {
-      const target = document.querySelector('#' + generateIdOfHTag(indexOfHTag));
-      basicItem.addEventListener('click', () => window.scrollTo({
+      const target = document.querySelector(
+        '#' + generateIdOfHTag(indexOfHTag)
+      );
+      basicItem.addEventListener('click', () =>
+        window.scrollTo({
         top: target.offsetTop - 10,
-        behavior: 'smooth'
-      }));
-    }
+          behavior: 'smooth',
+        })
+      );
+    };
 
     const giveIdToHTags = function () {
       hTags.forEach((hTag, indexOfHTag) => {
         hTag.id = generateIdOfHTag(indexOfHTag);
       });
-    }
+    };
 
     const findCurrentHTag = function () {
       if (hTags.length == 0) {
@@ -212,12 +279,18 @@ const TOC_CARD = (function () {
 
       const currentHTag = findCurrentMainHTag();
       return findTocTagCorrespondingToHTag(currentHTag);
-    }
+    };
 
     const findCurrentMainHTag = function () {
       const headArea = document.querySelector('.jb-background-header');
-      const headAreaHeight = headArea !== undefined ? headArea.offsetHeight : 0;
-      const middleHeight = window.scrollY + (window.innerHeight / 2) - headAreaHeight;
+
+      let headAreaHeight = 0;
+      if (headArea) {
+        headAreaHeight = headArea.offsetHeight;
+      }
+
+      const middleHeight =
+        window.scrollY + window.innerHeight / 2 - headAreaHeight;
 
       return [...hTags].reduce((pre, cur) => {
         if (middleHeight < pre.offsetTop && middleHeight < cur.offsetTop) {
@@ -230,30 +303,30 @@ const TOC_CARD = (function () {
 
         return cur;
       });
-    }
+    };
 
     const findTocTagCorrespondingToHTag = function (currentHTag) {
       const indexOfHTag = parseIndexOfTag(currentHTag);
 
       return document.querySelector(`#toc-${indexOfHTag}`);
-    }
+    };
 
     const parseIndexOfTag = function (hTag) {
       const tokens = hTag.id.split('-');
       return parseInt(tokens[tokens.length - 1]);
-    }
+    };
 
     const markCurrentHTag = function (tocTag) {
       removeAllClassOnTocTags('toc-active');
       tocTag.classList.add('toc-active');
       markParentHTagOf(tocTag);
-    }
+    };
 
     const removeAllClassOnTocTags = function (className) {
       Array.prototype.slice.call(tocElementsCard.children).forEach(child => {
         child.classList.remove(className);
       });
-    }
+    };
 
     const markParentHTagOf = function (tocTag) {
       const indexOfTocTag = parseIndexOfTag(tocTag);
@@ -261,30 +334,39 @@ const TOC_CARD = (function () {
 
       removeAllClassOnTocTags('toc-parent-active');
       compareLevelAndMark(levelOfBaseTocTag, indexOfTocTag);
-    }
+    };
 
     /**
      * 현재 active 태그의 부모 레벨 태그를 표시 
      * 기준 태그(active 태그)애서 하나씩 위로 올라가면서 부모 태그를 탐색 (재귀)
      * */
-    const compareLevelAndMark = function (levelOfBaseTocTag, indexOfCurrentTocTag) {
+    const compareLevelAndMark = function (
+      levelOfBaseTocTag,
+      indexOfCurrentTocTag
+    ) {
       if (levelOfBaseTocTag <= 1 || indexOfCurrentTocTag < 0) {
         return;
       }
 
-      const currentTocTag = document.querySelector(`#toc-${indexOfCurrentTocTag}`);
+      const currentTocTag = document.querySelector(
+        `#toc-${indexOfCurrentTocTag}`
+      );
       const levelOfCurrentTocTag = findLevelOfTocTag(currentTocTag);
 
       if (levelOfBaseTocTag <= levelOfCurrentTocTag) {
         return compareLevelAndMark(levelOfBaseTocTag, indexOfCurrentTocTag - 1);
       }
 
-      currentTocTag.classList.add('toc-parent-active')
+      currentTocTag.classList.add('toc-parent-active');
       compareLevelAndMark(levelOfBaseTocTag - 1, indexOfCurrentTocTag - 1);
-    }
+    };
 
     const findLevelOfTocTag = function (tocTag) {
       const classes = tocTag.classList;
+      if (classes.contains('toc-level-5')) {
+        return 5;
+      }
+
       if (classes.contains('toc-level-4')) {
         return 4;
       }
@@ -298,7 +380,7 @@ const TOC_CARD = (function () {
       }
 
       return 1;
-    }
+    };
 
     /**
      * TOC 항목이 너무 많아 TOC Card에 스크롤이 생길 경우, 
@@ -306,17 +388,23 @@ const TOC_CARD = (function () {
      */
     const scrollToMainTocTag = function (tocTag) {
       tocElementsCard.scroll({
-        top: tocTag.offsetTop - (tocTag.offsetParent.offsetHeight * 0.3),
-        behavior: 'smooth'
+        top: tocTag.offsetTop - tocTag.offsetParent.offsetHeight * 0.3,
+        behavior: 'smooth',
       });
-    }
+    };
 
     const detectTocCardPosition = function () {
       const currentScrollTop = document.documentElement.scrollTop;
 
       const footer = document.querySelector('.jb-background-footer');
-      const footerTop = footer !== undefined ? footer.offsetTop : Number.MAX_SAFE_INTEGER;
-      const elementsCardBottom = currentScrollTop + tocElementsCard.offsetHeight;
+
+      let footerTop = Number.MAX_SAFE_INTEGER;
+      if (footer) {
+        footerTop = footer.offsetTop;
+      }
+
+      const elementsCardBottom =
+        currentScrollTop + tocElementsCard.offsetHeight;
 
       tocElementsCard.classList.remove('toc-app-basic', 'toc-app-bottom');
 
@@ -326,7 +414,7 @@ const TOC_CARD = (function () {
       }
 
       tocElementsCard.classList.add('toc-app-basic');
-    }
+    };
 
     return {
       checkExistenceOfHTags,
@@ -337,8 +425,8 @@ const TOC_CARD = (function () {
       findCurrentHTag,
       markCurrentHTag,
       scrollToMainTocTag,
-      detectTocCardPosition
-    }
+      detectTocCardPosition,
+    };
   };
 
   const tocCardController = new TocCardController();
@@ -349,17 +437,17 @@ const TOC_CARD = (function () {
 
   const onscroll = function () {
     tocCardController.onscroll();
-  }
+  };
 
   const onscrollend = function () {
     tocCardController.onscrollend();
-  }
+  };
 
   return {
     init,
     onscroll,
     onscrollend,
-  }
+  };
 })();
 
 TOC_CARD.init();
