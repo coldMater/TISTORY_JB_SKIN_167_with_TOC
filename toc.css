@@ -21,6 +21,7 @@
     top: 110px;
     overflow-y: scroll;
     -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .items::-webkit-scrollbar {
@@ -57,6 +58,16 @@
     font-size: 0.75rem;
     margin-left: 2.2rem;
     font-weight: 500;
+}
+
+.toc-level-5 {
+    font-size: 0.725rem;
+    margin-left: 2.9rem;
+}
+
+.toc-level-6 {
+    font-size: 0.7rem;
+    margin-left: 3.6rem;
 }
 
 .toc-active, .toc-parent-active {
